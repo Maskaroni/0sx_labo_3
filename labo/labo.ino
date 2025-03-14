@@ -12,6 +12,15 @@ const float PHOTORESISTOR_PIN = A0;
 const float FORWARD_BACK_PIN = A1;
 const float LEFT_RIGHT_PIN = A2;
 
+const int maxBack = -25;
+const int maxFront = 120;
+const int maxLeft = -90;
+const int maxRight = 90;
+const int zero = 0;
+const int maxYAndPhotoresistor = 1023;
+const int middleY = 514;
+const int maxX = 1060;
+
 unsigned long startTime = 0;
 unsigned long delayThis = 0;
 const int numberOfScreens = 2;
@@ -68,7 +77,7 @@ void start(unsigned long startTime) {                                           
 }
 
 void displayCarStats(unsigned long startTime) {                                                  //DisplayCartStats
-  if ((startTime % 100) == 0) {
+  if ((startTime % 100) == zero) {
     Serial.print("etd:2486739,x:");
     Serial.print(x);
     Serial.print(",y:");
@@ -86,12 +95,12 @@ void headlights(unsigned long startTime) {                                      
   static int isOverFifty = 0;
   static int pastInput = 0;
   int isSameInput = false;
-  percent = map((analogRead(PHOTORESISTOR_PIN)), 0, 1023, 0, 104);
+  percent = map((analogRead(PHOTORESISTOR_PIN)), zero, maxYAndPhotoresistor, zero, 104);
   if (percent > 100) {
     percent = 100;
   }
-  else if (percent < 0) {
-    percent = 0;
+  else if (percent < zero) {
+    percent = zero;
   }
 
   delayThis = 5000;
@@ -121,18 +130,18 @@ void headlights(unsigned long startTime) {                                      
 
 void directionVroom() {                                                                          //DirectionVroom
   y = analogRead(FORWARD_BACK_PIN);
-  if (y > 514) {
-    go = map(y, 514.1, 1023, 0, 120);     //Sans bouger, le joystick est à y = 514 ou 515
+  if (y > middleY) {
+    go = map(y, 514.1, maxYAndPhotoresistor, zero, maxFront);     //Sans bouger, le joystick est à y = 514 ou 515
   }
-  else if (y < 514) {
-    go = map(y, 0, 513.9, -25, 0);
+  else if (y < middleY) {
+    go = map(y, zero, 513.9, maxBack, zero);
   }
   else {
-    go = 0;
+    go = zero;
   }
 
   x = analogRead(LEFT_RIGHT_PIN);
-  leftRight = map(x, 0, 1060, -90, 90);   //Sans bouger, le joystick est à x = 530
+  leftRight = map(x, zero, maxX, maxLeft, maxRight);   //Sans bouger, le joystick est à x = 530
 }
 
 void changeScreen() {                                                                            //ChangeScreen
@@ -166,24 +175,24 @@ void screenOn(int thisScreen) {                                                 
       if (go > 0) {
         lcd.print("Avance");
       }
-      else if (go < 0) {
+      else if (go < zero) {
         lcd.print("Recule");
       }
       else {
         lcd.print("Arrete");
       }
       lcd.setCursor(9, 0);
-      if (go < 0) {                                          //J'ai affiché la vitesse toujours au positif
+      if (go < zero) {                                          //J'ai affiché la vitesse toujours au positif
         go = -go;
       }
       lcd.print(go);
       lcd.print("km/h");
 
       lcd.setCursor(12, 2);
-      if (leftRight > 0) {
+      if (leftRight > zero) {
         lcd.print("D");
       }
-      else if (leftRight < 0) {
+      else if (leftRight < zero) {
         lcd.print("G");
       }
       else {
