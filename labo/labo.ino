@@ -15,6 +15,7 @@ const float LEFT_RIGHT_PIN = A2;
 unsigned long startTime = 0;
 unsigned long delayThis = 0;
 const int numberOfScreens = 2;
+int whichScreen = 1;
 
 int ledState;
 int percent;
@@ -24,9 +25,10 @@ long y;
 int go;
 int leftRight;
 
-void setup() {
+void setup() {                                                                                  //Setup
   Serial.begin(115200);
   lcd.begin(115200);
+  lcd.backlight();
   lcd.createChar(0, trenteNeuf);
   lcd.createChar(1, degre);
   pinMode(LED_PIN, OUTPUT);
@@ -38,7 +40,7 @@ void setup() {
   Serial.println("The screen has displayed my name already!");
 }
 
-void loop() { 
+void loop() {                                                                                    //Loop
   startTime = millis();
   button.tick();
 
@@ -48,7 +50,7 @@ void loop() {
 }
 
 
-void start(unsigned long startTime) {
+void start(unsigned long startTime) {                                                            //Start
   unsigned long currentTimeHere;
   delayThis = 3000;
 
@@ -65,7 +67,7 @@ void start(unsigned long startTime) {
   screenOn(1);
 }
 
-void displayCarStats(unsigned long startTime) {
+void displayCarStats(unsigned long startTime) {                                                  //DisplayCartStats
   if ((startTime % 100) == 0) {
     Serial.print("etd:2486739,x:");
     Serial.print(x);
@@ -73,10 +75,12 @@ void displayCarStats(unsigned long startTime) {
     Serial.print(y);
     Serial.print(",sys:");
     Serial.println(offOn);
+
+    screenOn(whichScreen);
   }
 }
 
-void headlights(unsigned long startTime) {
+void headlights(unsigned long startTime) {                                                       //Headlights
   unsigned static long timer;
   static bool timerIsDone;
   static int isOverFifty = 0;
@@ -115,7 +119,7 @@ void headlights(unsigned long startTime) {
   digitalWrite(LED_PIN, ledState);
 }
 
-void directionVroom() {
+void directionVroom() {                                                                          //DirectionVroom
   y = analogRead(FORWARD_BACK_PIN);
   if (y > 514) {
     go = map(y, 514.1, 1023, 0, 120);     //Sans bouger, le joystick est à y = 514 ou 515
@@ -131,8 +135,7 @@ void directionVroom() {
   leftRight = map(x, 0, 1060, -90, 90);   //Sans bouger, le joystick est à x = 530
 }
 
-void changeScreen() {
-  static int whichScreen = 0;
+void changeScreen() {                                                                            //ChangeScreen
   whichScreen++;
   if (whichScreen > numberOfScreens) {
     whichScreen = 1;
@@ -141,7 +144,7 @@ void changeScreen() {
   screenOn(whichScreen);
 }
 
-void screenOn(int thisScreen) {
+void screenOn(int thisScreen) {                                                                  //ScreenOn
   lcd.clear();
 
   switch(thisScreen) {
@@ -189,7 +192,7 @@ void screenOn(int thisScreen) {
       }
       break;
     default:
-      lcd.setCursor(7, 1);
-      lcd.print("Problème!");
+      lcd.setCursor(4, 0);
+      lcd.print("Probleme!");
   }
 }
